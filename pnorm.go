@@ -1,7 +1,6 @@
-package main
+package pnorm
 
 import (
-	"fmt"
 	"math"
 )
 
@@ -12,7 +11,7 @@ const (
 	DBLEpsilon = 2.2204460492503131e-16
 )
 
-func R_D__0(logP bool) float64 {
+func _R_D__0(logP bool) float64 {
 	if logP {
 		return math.Inf(-1)
 	} else {
@@ -20,7 +19,7 @@ func R_D__0(logP bool) float64 {
 	}
 }
 
-func R_D__1(logP bool) float64 {
+func _R_D__1(logP bool) float64 {
 	if logP {
 		return 0
 	} else {
@@ -28,23 +27,23 @@ func R_D__1(logP bool) float64 {
 	}
 }
 
-func R_DT_0(lowerTail bool, logP bool) float64 {
+func _R_DT_0(lowerTail bool, logP bool) float64 {
 	if lowerTail {
-		return R_D__0(logP)
+		return _R_D__0(logP)
 	} else {
-		return R_D__1(logP)
+		return _R_D__1(logP)
 	}
 }
 
-func R_DT_1(lowerTail bool, logP bool) float64 {
+func _R_DT_1(lowerTail bool, logP bool) float64 {
 	if lowerTail {
-		return R_D__1(logP)
+		return _R_D__1(logP)
 	} else {
-		return R_D__0(logP)
+		return _R_D__0(logP)
 	}
 }
 
-func DoDel(ccum *float64, cum *float64, logP bool, X float64, temp float64, upper bool, lower bool, x float64) {
+func _DoDel(ccum *float64, cum *float64, logP bool, X float64, temp float64, upper bool, lower bool, x float64) {
 	xsq := math.Ldexp(math.Trunc(math.Ldexp(X, 4)), -4)
 	del := (X - xsq) * (X + xsq)
 	if logP {
@@ -109,7 +108,7 @@ func pnormBoth(x float64, cum *float64, ccum *float64, iTail bool, logP bool) {
 			xden = (xden + d[i]) * y
 		}
 		temp = (xnum + c[7]) / (xden + d[7])
-		DoDel(ccum, cum, logP, y, temp, upper, lower, x)
+		_DoDel(ccum, cum, logP, y, temp, upper, lower, x)
 		if x > 0 {
 			temp = *cum
 			if lower {
@@ -127,7 +126,7 @@ func pnormBoth(x float64, cum *float64, ccum *float64, iTail bool, logP bool) {
 		}
 		temp = xsq * (xnum + p[4]) / (xden + q[4])
 		temp = (M1Sqrt2PI - temp) / y
-		DoDel(ccum, cum, logP, y, temp, upper, lower, x)
+		_DoDel(ccum, cum, logP, y, temp, upper, lower, x)
 		if x > 0 {
 			temp = *cum
 			if lower {
@@ -137,11 +136,11 @@ func pnormBoth(x float64, cum *float64, ccum *float64, iTail bool, logP bool) {
 		}
 	} else {
 		if x > 0 {
-			*cum = R_D__1(logP)
-			*ccum = R_D__0(logP)
+			*cum = _R_D__1(logP)
+			*ccum = _R_D__0(logP)
 		} else {
-			*cum = R_D__0(logP)
-			*ccum = R_D__1(logP)
+			*cum = _R_D__0(logP)
+			*ccum = _R_D__1(logP)
 		}
 	}
 	if logP {
@@ -173,18 +172,18 @@ func pnorm5(x float64, mu float64, sigma float64, lowerTail bool, logP bool) flo
 			return math.NaN()
 		}
 		if x < mu {
-			return R_DT_0(lowerTail, logP)
+			return _R_DT_0(lowerTail, logP)
 		} else {
-			return R_DT_1(lowerTail, logP)
+			return _R_DT_1(lowerTail, logP)
 		}
 	}
 	p := (x - mu) / sigma
 	var cp float64
 	if math.IsInf(p, 0) {
 		if x < mu {
-			return R_DT_0(lowerTail, logP)
+			return _R_DT_0(lowerTail, logP)
 		} else {
-			return R_DT_1(lowerTail, logP)
+			return _R_DT_1(lowerTail, logP)
 		}
 	}
 	x = p
@@ -196,11 +195,6 @@ func pnorm5(x float64, mu float64, sigma float64, lowerTail bool, logP bool) flo
 	}
 }
 
-func pnorm(q float64, mean float64, sd float64, lowerTail bool, logP bool) float64 {
+func Pnorm(q float64, mean float64, sd float64, lowerTail bool, logP bool) float64 {
 	return pnorm5(q, mean, sd, lowerTail, logP)
-}
-
-func main() {
-	p := pnorm(30, 0, 1, false, false)
-	fmt.Println(p)
 }
