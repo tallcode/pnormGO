@@ -1,4 +1,4 @@
-package pnorm
+package pnormGO
 
 import (
 	"math"
